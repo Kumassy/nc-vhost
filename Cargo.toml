@@ -12,6 +12,9 @@ futures = "0.3"
 bytes = "1.0"
 once_cell = "1.7"
 
+[dev-dependencies]
+tokio-test = "0.4.1"
+
 [[bin]]
 name = "back-server"
 path = "src/back_server.rs"
