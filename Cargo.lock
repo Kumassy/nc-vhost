@@ -190,7 +190,9 @@ dependencies = [
 name = "nc-vhost"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "futures",
+ "once_cell",
  "tokio",
 ]
 

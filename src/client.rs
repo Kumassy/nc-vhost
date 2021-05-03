@@ -1,5 +1,6 @@
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
+use bytes::BufMut;
 
 use std::env;
 use std::error::Error;
@@ -11,6 +12,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .nth(1)
         .unwrap_or_else(|| "127.0.0.1:8080".into())
         .parse()?;
+    let subdomain: String = env::args()
+        .nth(2)
+        .unwrap_or_else(|| "service".into());
 
     let mut socket = TcpStream::connect(remote_addr).await?;
     let mut stdin = io::stdin();
@@ -26,8 +30,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
             continue;
         }
 
+        let mut bytes = vec![];
+        bytes.put_u32(subdomain.len() as u32);
+        bytes.put(subdomain.as_bytes());
+        bytes.put_u32(n as u32);
+        bytes.put(&buf[0..n]);
+
         socket
-            .write_all(&buf[0..n])
+            .write_all(&bytes)
             .await
             .expect("failed to write data to socket");
     }
